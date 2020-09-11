@@ -12,6 +12,10 @@ import androidx.room.PrimaryKey
 *   distanceInMeters = distance traveled in Meters
 *   timeInMillis = time length of the run in Milliseconds
 *   caloriesBurned = burned calories during run
+ *
+ *
+ *   An entity class defines a table, and each instance of that class represents a row in the table. Each property defines a column.
+ *
 * */
 @Entity(tableName = "run_table")
 class Run(

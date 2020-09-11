@@ -3,6 +3,14 @@ package com.krystofmacek.runtracker.database
 import androidx.lifecycle.LiveData
 import androidx.room.*
 
+
+/**
+ * DAO provides convenience methods for inserting, deleting, and updating the database.
+ * interface for accessing your database.
+ *
+ *
+ *
+ * **/
 @Dao
 interface RunDAO {
 
