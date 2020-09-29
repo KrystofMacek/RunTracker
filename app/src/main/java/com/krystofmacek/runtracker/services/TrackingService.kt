@@ -32,8 +32,13 @@ import com.krystofmacek.runtracker.other.Constants.LOCATION_UPDATE_INTERVAL
 import com.krystofmacek.runtracker.other.Constants.NOTIFICATION_CHANNEL_ID
 import com.krystofmacek.runtracker.other.Constants.NOTIFICATION_CHANNEL_NAME
 import com.krystofmacek.runtracker.other.Constants.NOTIFICATION_ID
+import com.krystofmacek.runtracker.other.Constants.TIMER_UPDATE_INTERVAL
 import com.krystofmacek.runtracker.other.TrackingUtility
 import com.krystofmacek.runtracker.ui.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 // List of Lat Long coordinates
@@ -52,9 +57,12 @@ class TrackingService : LifecycleService() {
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
+    private val timeRunInSeconds = MutableLiveData<Long>()
+
     companion object {
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<Polylines>()
+        val timeRunInMillis = MutableLiveData<Long>()
     }
 
     /**
@@ -65,6 +73,8 @@ class TrackingService : LifecycleService() {
     private fun initTrackingValues() {
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
+        timeRunInSeconds.postValue(0L)
+        timeRunInMillis.postValue(0L)
     }
 
     override fun onCreate() {
@@ -135,6 +145,14 @@ class TrackingService : LifecycleService() {
         }
     }
 
+
+
+
+    private fun pauseService() {
+        isTracking.postValue(false)
+        isTimerEnabled = false
+    }
+
     /**
      * Override onStartCommand method of Lifecycle Service
      * */
@@ -148,6 +166,7 @@ class TrackingService : LifecycleService() {
                         isFirstRun = false
                     } else {
                         Timber.d("Resuming service")
+                        startTimer()
                     }
                     Timber.d("Service Started / Resumed")
                 }
@@ -157,7 +176,9 @@ class TrackingService : LifecycleService() {
                 }
 
                 ACTION_PAUSE_SERVICE -> {
+                    pauseService()
                     Timber.d("Service Paused")
+
                 }
             }
         }
@@ -167,7 +188,7 @@ class TrackingService : LifecycleService() {
 
     private fun startForegroundService() {
 
-        addEmptyPolyline()
+        startTimer()
         isTracking.postValue(true)
 
         // Create Notification Manager
@@ -217,6 +238,39 @@ class TrackingService : LifecycleService() {
             IMPORTANCE_LOW
         )
         notificationManager.createNotificationChannel(channel)
+    }
+
+    /**
+     * Stopwatch functionality
+     * */
+
+    private var isTimerEnabled = false
+    private var lapTime = 0L
+    private var timeRun = 0L
+    private var timeStarted = 0L
+    private var lastSecondTimestamp = 0L
+
+    private fun startTimer() {
+        addEmptyPolyline()
+        isTracking.postValue(true)
+        timeStarted = System.currentTimeMillis()
+        isTimerEnabled = true
+        /**
+         * Start coroutine, responsible for updating timer
+         * */
+        CoroutineScope(Dispatchers.Main).launch {
+            while (isTracking.value!!) {
+                lapTime = System.currentTimeMillis() - timeStarted
+                timeRunInMillis.postValue(timeRun + lapTime)
+                // update every second
+                if(timeRunInMillis.value!! >= lastSecondTimestamp + 1000L) {
+                    timeRunInSeconds.postValue(timeRunInSeconds.value!! + 1)
+                    lastSecondTimestamp += 1000L
+                }
+                delay(TIMER_UPDATE_INTERVAL)
+            }
+            timeRun += lapTime
+        }
     }
 
 }
