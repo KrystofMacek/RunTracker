@@ -13,6 +13,7 @@
     <string name="welcome_headline">Welcome!\nPlease enter your name and weight.</string>
     <string name="setup_your_name">Your Name</string>
     <string name="setup_continue">Continue</string>
+    <string name="cancel_tracking">Cancel Tracking</string>
 
 
     <string-array name="filter_options">
