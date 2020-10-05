@@ -31,6 +31,7 @@ import com.krystofmacek.runtracker.ui.viewModels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.round
 
 @AndroidEntryPoint
@@ -47,7 +48,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     private var currentTimeInMillis = 0L
 
-    private var weight = 75
+    @set:Inject
+    var weight = 75f
 
     override fun onCreateView(
         inflater: LayoutInflater,
