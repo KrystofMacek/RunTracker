@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         val navController = navHostFragment.findNavController()
         bottomNavigationView.setupWithNavController(navController)
+        bottomNavigationView.setOnNavigationItemReselectedListener { /* No operation */ }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when(destination.id) {

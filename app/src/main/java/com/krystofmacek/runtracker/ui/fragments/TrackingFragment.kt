@@ -155,6 +155,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
      * stop run and navigate to run fragment
      * */
     private fun stopRun() {
+        tvTimer.text = getString(R.string.timer_default_time)
         sendCommandToService(ACTION_STOP_SERVICE)
         findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
     }
@@ -176,13 +177,13 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
      * */
     private fun updateTracking(isTracking: Boolean) {
         this.isTracking = isTracking
-        if(!isTracking) {
+        if(!isTracking && currentTimeInMillis > 0L) {
             btnToggleRun.text = "Start"
             btnFinishRun.visibility = View.VISIBLE
-        } else {
+        } else if(isTracking) {
             btnToggleRun.text = "Stop"
-            btnFinishRun.visibility = View.GONE
             menu?.getItem(0)?.isVisible = true
+            btnFinishRun.visibility = View.GONE
         }
     }
 

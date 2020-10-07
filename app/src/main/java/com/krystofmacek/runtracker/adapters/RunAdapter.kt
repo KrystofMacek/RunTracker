@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.krystofmacek.runtracker.R
 import com.krystofmacek.runtracker.database.Run
+import com.krystofmacek.runtracker.other.TrackingUtility
 import kotlinx.android.synthetic.main.item_run.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -56,6 +57,8 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
 
             val distanceInKm = "${run.distanceInMeters / 1000f}km"
             tvDistance.text = distanceInKm
+
+            tvTime.text = TrackingUtility.getFormattedStopWatchTime(run.timeInMillis)
 
             val calBurned = "${run.caloriesBurned}kcal"
             tvCalories.text = calBurned
